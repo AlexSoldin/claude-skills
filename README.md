@@ -11,6 +11,7 @@ Skills are reusable prompts that extend Claude Code's capabilities. Each skill i
 | Skill | Description |
 |-------|-------------|
 | [commit-push-pr](skills/commit-push-pr/SKILL.md) | Commit staged changes, push to remote, and create a pull request. Enforces branch protection by never pushing directly to main. |
+| [refresh-claude-skills](skills/refresh-claude-skills/SKILL.md) | Update Claude skills from this repository by pulling latest changes and running the install script. |
 
 ## Installation
 
