@@ -1,47 +1,98 @@
-# Claude Skills
+# Claude Skills & Cursor Rules
 
-A collection of custom skills for [Claude Code](https://claude.com/claude-code).
+A collection of custom skills for [Claude Code](https://claude.com/claude-code) and rules for [Cursor](https://cursor.com).
 
-## What are Skills?
+## What's the Difference?
 
-Skills are reusable prompts that extend Claude Code's capabilities. Each skill is a `SKILL.md` file with YAML frontmatter defining metadata and markdown content with instructions.
+| Aspect | Claude Skills | Cursor Rules |
+|--------|---------------|--------------|
+| Location | `~/.claude/skills/` | `~/.cursor/rules/` |
+| Format | `SKILL.md` with YAML frontmatter | `.mdc` markdown files |
+| Invocation | Slash commands (`/skill-name`) | Auto-applied or manually referenced |
+| Structure | Directory per skill | Single file per rule |
 
-## Available Skills
+**Skills** are explicitly invoked via slash commands in Claude Code. **Rules** provide contextual guidance that Cursor can apply automatically or that you reference in prompts.
 
-| Skill | Description |
-|-------|-------------|
-| [commit-push-pr](skills/commit-push-pr/SKILL.md) | Commit staged changes, push to remote, and create a pull request. Enforces branch protection by never pushing directly to main. |
-| [refresh-claude-skills](skills/refresh-claude-skills/SKILL.md) | Update Claude skills from this repository by pulling latest changes and running the install script. |
+## Available Skills & Rules
+
+| Name | Description | Claude | Cursor |
+|------|-------------|--------|--------|
+| commit-push-pr | Commit changes, push to remote, and create a PR. Enforces branch protection. | ✓ | ✓ |
+| refresh-claude-skills | Pull latest changes and reinstall Claude skills. | ✓ | — |
+| refresh-cursor-rules | Pull latest changes and reinstall Cursor rules. | — | ✓ |
 
 ## Installation
 
 ### Quick Install
 
-Run the install script to symlink all skills to your Claude skills directory:
+Run the install script - it will prompt you to choose which tool(s) to install for:
 
 ```bash
 ./install.sh
 ```
 
+You'll see:
+```
+Install for which tool?
+1) Claude only
+2) Cursor only
+3) Both (Recommended)
+Choice [3]:
+```
+
+### Non-Interactive Install
+
+Use flags to skip the prompt:
+
+```bash
+./install.sh --claude    # Install Claude skills only
+./install.sh --cursor    # Install Cursor rules only
+./install.sh --both      # Install both (same as default)
+```
+
+Add `--force` to update existing symlinks:
+
+```bash
+./install.sh --force --both
+```
+
 ### Manual Install
 
-Symlink individual skills to `~/.claude/skills/`:
-
+**Claude skills:**
 ```bash
 ln -sf /path/to/claude-skills/skills/commit-push-pr ~/.claude/skills/commit-push-pr
 ```
 
+**Cursor rules:**
+```bash
+ln -sf /path/to/claude-skills/cursor-rules/commit-push-pr.mdc ~/.cursor/rules/commit-push-pr.mdc
+```
+
 ## Usage
 
-Once installed, invoke skills in Claude Code using the slash command:
+### Claude Code
+
+Invoke skills using slash commands:
 
 ```
 /commit-push-pr
+/refresh-claude-skills
 ```
 
-## Creating New Skills
+### Cursor
 
-1. Create a new directory under `skills/`:
+Rules in `~/.cursor/rules/` can be:
+1. **Referenced directly** - Cursor can access rules from this global location
+2. **Symlinked to projects** - Create project-specific symlinks:
+   ```bash
+   ln -sf ~/.cursor/rules/commit-push-pr.mdc /path/to/project/.cursor/rules/
+   ```
+
+## Creating New Skills/Rules
+
+### Claude Skill
+
+1. Create a directory under `skills/`:
    ```bash
    mkdir skills/my-new-skill
    ```
@@ -59,7 +110,23 @@ Once installed, invoke skills in Claude Code using the slash command:
    Instructions for Claude to follow when this skill is invoked.
    ```
 
-3. Run `./install.sh` to create the symlink
+3. Run `./install.sh --claude` to create the symlink
+
+### Cursor Rule
+
+1. Create a `.mdc` file under `cursor-rules/`:
+   ```bash
+   touch cursor-rules/my-new-rule.mdc
+   ```
+
+2. Add markdown content (no frontmatter needed):
+   ```markdown
+   # My New Rule
+
+   When asked to do X, follow these instructions...
+   ```
+
+3. Run `./install.sh --cursor` to create the symlink
 
 ## License
 
